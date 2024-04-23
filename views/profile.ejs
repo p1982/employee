@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <!-- Заголовок передається як змінна до частини head для динамічних заголовків сторінок. -->
+    <%- include('./partials/head.ejs', {title: 'My Profile' }) %>
+
+<body>
+    <%- include('./partials/header.ejs') %>
+    <!-- Ресурс для стилізації кнопок - CTA-посилання: https://flowbite.com/docs/typography/links/ -->
+        <main class="pt-[150px] pb-[60px] bg-[url('/assets/neutral.jpeg')] bg-no-repeat bg-cover">
+            <div class="max-w-[1200px] my-auto mx-auto">
+                <div class=" gap-2 flex flex-col justify-center items-center">
+                <h2 class="mb-4 font-bold text-2xl">Welcome to your profile, <%=employee.username.charAt(0).toUpperCase() +
+                        employee.username.slice(1).toLowerCase()%>!
+                </h2>
+                <p class="text-xl"><span class="font-bold">FirstName:</span> <%= employee.firstName.charAt(0).toUpperCase() +
+                        employee.firstName.slice(1).toLowerCase()%>
+                </p>
+                <p class="text-xl"><span class="font-bold">LastName: </span><%= employee.lastName.charAt(0).toUpperCase() + employee.lastName.slice(1).toLowerCase()%>
+                </p>
+                <p class="text-xl"><span class="font-bold">Department:</span> <%= employee.department%>
+                </p>
+                <p class="text-xl"><span class="font-bold">Position: </span><%= employee.position%>
+                </p>
+                <p class="text-xl"><span class="font-bold">Email:</span> <%= employee.email%>
+                </p>
+                <p class="text-xl"><span class="font-bold">Phone number:</span> <%= employee.phoneNumber%>
+                </p>
+                <p class="text-xl"> <img class="mt-4 rounded-full w-32 h-32 object-cover" src="<%=employee.picture%>" alt=""></p>
+            </div>
+            </div>
+        </main>
+        <%- include('./partials/footer.ejs') %>
+</body>
+
+</html>

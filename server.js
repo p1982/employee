@@ -1,12 +1,13 @@
 //Імпорт експресс бібліотеки
-const express = required('express')
+const express = require('express')
 //Створня сесії
 const session = require('express-session')
 //Імпорт біблотеку для запитів
 const axios = require('axios')
 //Імпорт контролерів для сессії та робітників
-const sessionCtrl = require('')
-const empCntr = require('')
+const sessionCtrl = require('./controllers/sessionController.js')
+const empCntr = require('./controllers/employeeController.js')
+const profileCtrl = require("./controllers/profileController.js")
 
 //Ініціалізація бібліотекі змінних середовища
 require("dotenv").config()
@@ -66,27 +67,14 @@ app.use(express.urlencoded({ extended: true }))
 //налаштування роутинга для застосунку
 app.use(morgan("tiny"))
 app.use("/session", sessionCtrl)
-app.use("/employee", empCtrl)
+app.use("/employees", empCntr)
+app.use("/profile", profileCtrl)
 
 // Домашня роут для рендера домашньї сторінки
 app.get("/", (req, res) => {
   res.render("home.ejs", { currentUser: null })
 })
 
-//Засіювання бази данних
-app.get("/seed", function (req, res) {
-  // Видалення попередньої бази данних
-  db.Room.deleteMany({})
-    .then(removedRoom => {
-      console.log(`Removed ${removedRoom.deletedCount} rooms`)
-      // засіювання даних
-      db.Room.insertMany(db.seedRooms)
-        .then(addedRoom => {
-          console.log(`Added ${addedRoom.length} rooms`)
-          res.json(addedRoom)
-        })
-    })
-})
 
 /* Запуск сервера на порту зі змінних оточення
 --------------------------------------------------------------- */

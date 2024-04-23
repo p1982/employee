@@ -1,23 +1,20 @@
-// Load environment variables from .env file
+// Завантажити змінні оточення з файлу .env
 require("dotenv").config()
-// Import mongoose to interact with MongoDB
+// Імпортуємо mongoose для взаємодії з MongoDB
 const mongoose = require("mongoose")
-// Import axios for making HTTP requests
+// Імпортуємо axios для створення HTTP-запитів
 const axios = require("axios")
-// Retrieve MongoDB connection URI from environment variables
-const MONGODBURI = process.env.MONGODBURI
-// Connect to MongoDB 
+// Отримати URI з'єднання з MongoDB зі змінних оточення
+const MONGODBURI = process.env.URI
+// Підключення до MongoDB 
 mongoose.connect(MONGODBURI)
 const db = mongoose.connection
 
-// Event listener for successful connection to MongoDB
-db.on("connected", function() {
+// Обробник події успішного з'єднання з MongoDB
+db.on("connected", function () {
     console.log(`Connected to MongoDB @{db.name} at ${db.host}: $db.port`)
 })
-// Export the models and seed data for use in other parts of Room-Booker application
+// Експортуємо моделі та вихідні дані для використання в інших частинах додатку Room-Booker
 module.exports = {
     Employee: require("./Employee"),
-    Booking: require("./Booking"),
-    Room: require("./Room"),
-    seedRooms: require("../seed/roomseed")
 }

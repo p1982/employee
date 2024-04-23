@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-
+//Ьщдель, яка контролює створення співробітника
 const employeeSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -38,11 +38,6 @@ const employeeSchema = new mongoose.Schema({
     required: true
   }, 
 
-bookings: [{
-    type: mongoose.ObjectId,
-    ref: "Booking"
-  }]
-
 });
-
+//експорт модели
 module.exports = mongoose.model("Employee", employeeSchema);
