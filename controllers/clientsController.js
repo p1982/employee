@@ -11,90 +11,62 @@ const db = require('../models')
 // Створює новий об'єкт router для керування маршрутами
 const router = express.Router()
 // Проміжне програмне забезпечення для перевірки автентичності працівника перед тим, як дозволити доступ до певних маршрутів
-const isAuthenticated = require("../controllers/isAuthenticated")
+const isAuthenticated = require("./isAuthenticated")
 
-// Наперед визначені відділи та відповідні їм посади
-const departments = {
-  Sales: ['Account Executive', 'Sales Manager', 'Business Development Representative'],
-  CustomerSupport: ['Customer Support Specialist', 'Technical Support Engineer', 'Customer Success Manager'],
-  InfoSys: ['Systems Analyst', 'IT Support Specialist', 'Database Administrator'],
-  Engineering: ['Software Engineer', 'DevOps Engineer', 'Frontend Developer', 'Backend Developer'],
-  Data: ['Data Analyst', 'Data Scientist', 'Data Engineer'],
-  Analytics: ['Business Analyst', 'Data Analyst', 'Analytics Consultant'],
-  Marketing: ['Marketing Coordinator', 'SEO Specialist', 'Content Strategist'],
-  Accounting: ['Accountant', 'Financial Analyst', 'Payroll Specialist'],
-  HR: ['HR Manager', 'Recruitment Specialist', 'HR Coordinator'],
-  Cybersecurity: ['Security Analyst', 'Cybersecurity Specialist', 'Information Security Manager'],
-  NewsAndMedia: ['Content Writer', 'Social Media Manager', 'Public Relations Specialist'],
-  Managers: ['Project Manager', 'Product Manager', 'Team Lead']
-}
-
-// Функція для випадкового вибору відділу та посади в цьому відділі
-function getRandomDepartmentAndPosition(departments) {
-  // Перетворити ключі відділів у масив та випадковим чином вибрати один з них
-  const departmentKeys = Object.keys(departments)
-  const randomDeptKey = departmentKeys[Math.floor(Math.random() * departmentKeys.length)]
-  // Вибрати випадкову посаду з вибраного відділу
-  const randomPosition = departments[randomDeptKey][Math.floor(Math.random() * departments[randomDeptKey].length)]
-  return { department: randomDeptKey, position: randomPosition }
-}
-
-// Функція-обробник маршруту для очищення та заповнення колекції Employee з API randomuser.me
-// Функція для очищення та подальшого заповнення колекції Employee
-function fetchAndCreateEmployees(req, res) {
-  // Спочатку очищаємо існуючу колекцію Employee
-  return db.Employee.deleteMany({})
+// Функція-обробник маршруту для очищення та заповнення колекції Clients з API randomuser.me
+// Функція для очищення та подальшого заповнення колекції Clients
+function fetchAndCreateClients(req, res) {
+  // Спочатку очищаємо існуючу колекцію Clients
+  return db.Clients.deleteMany({})
     .then(deletedData => {
-      console.log(`Removed ${deletedData.deletedCount} employees`)
+      console.log(`Removed ${deletedData.deletedCount} Clients`)
       // Отримати та вставити нові дані про співробітників з API
       return axios.get('https://randomuser.me/api/', {
-        params: { results: 30, nat: "UK" } // Об'єкт, що містить параметри рядка запиту, який буде додано до URL. Посилання: https://apidog.com/blog/params-axios-get-request/
+        params: { results: 40, nat: "UA" } // Об'єкт, що містить параметри рядка запиту, який буде додано до URL. Посилання: https://apidog.com/blog/params-axios-get-request/
       })
     })
     .then(response => {
-      const employeesData = response.data.results
-      const employees = employeesData.map(user => {
+      const clientsData = response.data.results
+      const clients = clientsData.map(user => {
         //Для кожного працівника викликається getRandomDepartmentAndPosition для присвоєння відділу та посади
-        const { department, position } = getRandomDepartmentAndPosition(departments)
         return {
           firstName: user.name.first,
           lastName: user.name.last,
-          department: department,
-          position: position,
           email: user.email,
           phoneNumber: user.phone,
           picture: user.picture.large,
           username: user.login.username,
-          password: bcrypt.hashSync(user.login.password, bcrypt.genSaltSync(10))
+          password: bcrypt.hashSync(user.login.password, bcrypt.genSaltSync(10)),
+          isAdmin: false
         }
       })
       // Вставляємо дані нового працівника в колекцію
-      return db.Employee.insertMany(employees)
+      return db.Clients.insertMany(clients)
     })
-    .then(addedEmployees => {
-      console.log(`Added ${addedEmployees.length} new employees`)
-      res.json(addedEmployees)
+    .then(addedClients => {
+      console.log(`Added ${addedClients.length} new clients`)
+      res.json(addedClients)
     })
     .catch(error => {
       console.error('Error in the seeding process:', error)
     })
 }
 
-//Маршрут для виклику функції fetchAndCreateEmployees при GET-запиті 
-router.get('/seed', fetchAndCreateEmployees)
+//Маршрут для виклику функції fetchAndCreateClients при GET-запиті 
+router.get('/seed', fetchAndCreateClients)
 
 // // НОВИЙ - показати форму для створення нових співробітників
 router.get("/new", isAuthenticated, (req, res) => {
   // Відобразити форму створення нового працівника
-  res.render("new-employee.ejs", { currentUser: req.session.currentUser })
+  res.render("new-client.ejs", { currentUser: req.session.currentUser })
 })
 
 router.get("/:id/update", isAuthenticated, (req, res) => {
-  db.Employee.findById(req.params.id)
-    .then(employee => {
+  db.Clients.findById(req.params.id)
+    .then(client => {
       // Якщо співробітника знайдено, відрендерити сторінку профілю та передати шаблону дані співробітника та currentUser
-      res.render("update-employee.ejs", {
-        employee: employee,
+      res.render("update-client.ejs", {
+        client: client,
         // Включаємо відображення персоналізованого контенту, передавши шаблону currentUser
         currentUser: req.session.currentUser,
         id: req.params.id
@@ -104,9 +76,9 @@ router.get("/:id/update", isAuthenticated, (req, res) => {
 
 // Показати маршрут: Відобразити деталі для конкретного працівника
 router.get("/:id", isAuthenticated, (req, res) => {
-  db.Employee.findById(req.params.id)
-    .then(employee => {
-      res.render("employee-details.ejs", { employee: employee, currentUser: req.session.currentUser })
+  db.Clients.findById(req.params.id)
+    .then(client => {
+      res.render("client-details.ejs", { client: client, currentUser: req.session.currentUser })
     })
     .catch(err => {
       res.status(500).json({ error: err.message })
@@ -118,11 +90,11 @@ router.get("/:id", isAuthenticated, (req, res) => {
 // Визначити маршрут для доступу до сторінки профілю
 router.get("/", isAuthenticated, (req, res) => {
   // Знайти в базі даних поточного аутентифікованого співробітника за його ідентифікатором, збереженим у сесії
-  db.Employee.find()
-    .then(employees => {
+  db.Clients.find()
+    .then(clients => {
       // Якщо співробітника знайдено, відрендерити сторінку профілю та передати шаблону дані співробітника та currentUser
-      res.render("employees.ejs", {
-        employees: employees,
+      res.render("clients.ejs", {
+        clients: clients,
         // Включаємо відображення персоналізованого контенту, передавши шаблону currentUser
         currentUser: req.session.currentUser
       })
@@ -134,11 +106,9 @@ router.get("/", isAuthenticated, (req, res) => {
 //Створити маршрут для створення нового працівника
 router.post('/', isAuthenticated, async (req, res) => {
 
-  const newEmployee = {
+  const newClient = {
     lastName: req.body.lastName,
     firstName: req.body.firstName,
-    department: req.body.department,
-    position: req.body.position,
     email: req.body.email,
     phoneNumber: req.body.phoneNumber,
     picture: req.body.picture,
@@ -147,28 +117,26 @@ router.post('/', isAuthenticated, async (req, res) => {
   }
 
   // Зберегти нового працівника в базі даних
-  await db.Employee.create(newEmployee)
+  await db.Clients.create(newClient)
 
   // Перенаправлення після успішного створення працівника
-  res.redirect("/employees")
+  res.redirect("/clients")
 })
 
 //Створити маршрут для оновлення працівника
 router.put('/:id', isAuthenticated, async (req, res) => {
   //пошук працівника в базі данних
-  const employee = await db.Employee.find({
+  const client = await db.Clients.find({
     _id: { $ne: req.params.id }
   });
   //Перевірка чи знайдений працівник
-  if (!employee) {
-    res.json({ status: 404, message: 'Employee not found' })
+  if (!client) {
+    res.json({ status: 404, message: 'Client not found' })
   }
 
-  const updateEmployee = {
+  const updateClient = {
     lastName: req.body.lastName,
     firstName: req.body.firstName,
-    department: req.body.department,
-    position: req.body.position,
     email: req.body.email,
     phoneNumber: req.body.phoneNumber,
     picture: req.body.picture,
@@ -176,28 +144,28 @@ router.put('/:id', isAuthenticated, async (req, res) => {
   }
 
   // Оновлення бази данних новими даними про працівника
-  await db.Employee.updateOne({ _id: req.params.id }, { $set: updateEmployee }, { new: true })
+  await db.Clients.updateOne({ _id: req.params.id }, { $set: updateClient }, { new: true })
 
   // Перенаправлення після успішного створення працівника
-  res.redirect("/employees")
+  res.redirect("/clients")
 })
 
 
 // DELETE - видалити певного співробітника, а потім перенаправити
 router.delete("/:id", isAuthenticated, (req, res) => {
   // Знайти працівника за його ідентифікатором
-  db.Employee.findById(req.params.id)
-    .then((employee) => {
+  db.Clients.findById(req.params.id)
+    .then((client) => {
       // Перевірка наявності співробітника
-      if (!employee) {
+      if (!client) {
         // Обробка помилки, якщо співробітник не знайден
-        return res.json({ status: 404, message: "Employee not found" })
+        return res.json({ status: 404, message: "Client not found" })
       }
       // Видалення
-      db.Employee.findByIdAndDelete(req.params.id)
+      db.Clients.findByIdAndDelete(req.params.id)
         .then(() => {
           // Перехід на сторінку всіх співробітників
-          res.redirect("/employees")
+          res.redirect("/clients")
         })
         // Обробка бази данних
         .catch(error => {

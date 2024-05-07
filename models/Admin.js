@@ -1,19 +1,11 @@
 const mongoose = require("mongoose")
-//Ьщдель, яка контролює створення співробітника
-const employeeSchema = new mongoose.Schema({
+//Модель, яка контролює створення співробітника
+const adminSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required: true
   },
   lastName: {
-    type: String,
-    required: true
-  },
-  department: {
-    type: String,
-    required: true
-  },
-  position: {
     type: String,
     required: true
   },
@@ -37,7 +29,11 @@ const employeeSchema = new mongoose.Schema({
     type: String,
     required: true
   }, 
-
+  isAdmin: {
+    type: Boolean,
+    required: true,
+    default: true
+  }
 });
 //експорт модели
-module.exports = mongoose.model("Employee", employeeSchema);
+module.exports = mongoose.model("Admin", adminSchema);

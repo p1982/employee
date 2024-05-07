@@ -6,7 +6,9 @@ const session = require('express-session')
 const axios = require('axios')
 //Імпорт контролерів для сессії та робітників
 const sessionCtrl = require('./controllers/sessionController.js')
-const empCntr = require('./controllers/employeeController.js')
+const drugCtrl = require('./controllers/drugController.js')
+const clientsCtrl = require('./controllers/clientsController.js')
+const adminCtrl = require('./controllers/adminController.js')
 const profileCtrl = require("./controllers/profileController.js")
 
 //Ініціалізація бібліотекі змінних середовища
@@ -67,9 +69,11 @@ app.use(express.urlencoded({ extended: true }))
 //налаштування роутинга для застосунку
 app.use(morgan("tiny"))
 app.use("/session", sessionCtrl)
-app.use("/employees", empCntr)
+app.use("/drugs", drugCtrl)
+app.use("/clients", clientsCtrl)
+app.use("/admins", adminCtrl)
 app.use("/profile", profileCtrl)
-
+adminCtrl
 // Домашня роут для рендера домашньї сторінки
 app.get("/", (req, res) => {
   res.render("home.ejs", { currentUser: null })

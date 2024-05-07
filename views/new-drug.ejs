@@ -2,70 +2,41 @@
 <html lang="en">
 
     <!-- Заголовок передається як змінна до частини head для динамічних заголовків сторінок. -->
-    <%- include('./partials/head.ejs', {title: 'Create Employee' }) %>
+    <%- include('./partials/head.ejs', {title: 'Створити Інсулін' }) %>
 
 <body>
     <%- include('./partials/nav.ejs') %>
         <%- include('./partials/header.ejs') %>
             <!-- Ресурс для стилізації кнопок - CTA-посилання: https://flowbite.com/docs/typography/links/ -->
-            <main class="py-[50px] bg-[url('/assets/meetingroom.jpeg')] min-h-[100vh] bg-no-repeat bg-cover">
+            <main class="py-[170px] bg-[url('/assets/meetingroom.jpeg')] min-h-[100vh] bg-no-repeat bg-cover">
                 <div class="max-w-[1200px] my-auto mx-auto">
                     <div class="max-w-[450px] mx-auto gap-4 flex flex-col justify-center items-center">
                         <div class="max-w-xl mx-auto py-12">
-                            <h1 class="text-[24px] mb-4 ext-xl font-bold">Update a Employee</h1>
-                            <form action="/employees/<%=id%>?_method=PUT" method="POST" class="space-y-4">
+                            <h1 class="text-[24px] mb-4 ext-xl font-bold">Оновити інсулін</h1>
+                            <form action="/drugs" method="POST" class="space-y-4">
 
                                 <div>
-                                    <label class="" for="firstName">First Name:<input
+                                    <label class="" for="name">Назва: <input
                                             class="border-2 border-solid border-blue-700 p-2 w-[100%]" required
-                                            type="text" name="firstName" id="firstName" placeholder="First name"
-                                            value="<%= employee.firstName %>"
+                                            type="text" name="name" id="name" placeholder="Назва"
                                             >
                                     </label>
 
-                                    <label for="lastName">Last Name:<input
+                                    <label for="price">Ціна:<input
                                             class="border-2 border-solid border-blue-700 p-2 w-[100%]" required
-                                            type="text" name="lastName" id="lastName" placeholder="Last name"
-                                            value="<%= employee.lastName %>"
+                                            type="text" name="price" id="price" placeholder="Ціна"
                                             > </label>
 
-                                    <label for="department">Department:<input
+                                    <label for="count">Кількість: <input
                                             class="border-2 border-solid border-blue-700 p-2 w-[100%]" required
-                                            type="text" name="department" id="department"
-                                            placeholder="Department"
-                                            value="<%= employee.department %>"
+                                            type="number" name="count" id="count"
+                                            placeholder="Кількість"
                                             ></label>
 
-                                    <label for="position">Position: <input
+                                    <label for="img_url">Картинка: <input
                                             class="border-2 border-solid border-blue-700 p-2 w-[100%]" required
-                                            type="text" name="position" id="position" placeholder="Position"
-                                            value="<%= employee.position %>"
+                                            type="text" name="img_url" id="img_url" placeholder="Картинка"
                                             ></label>
-
-                                    <label for="email">Corporate Email: <input
-                                            class="border-2 border-solid border-blue-700 p-2 w-[100%]" required
-                                            type="email" name="email" id="email" placeholder="Email" 
-                                            value="<%= employee.email %>"
-                                            /></label>
-
-                                    <label for="phoneNumber">Phone number: <input
-                                            class="border-2 border-solid border-blue-700 p-2 w-[100%]" required
-                                            type="text" name="phoneNumber" id="phoneNumber"
-                                            placeholder="Phone number"
-                                            value="<%= employee.phoneNumber %>"
-                                            ></label>
-
-                                    <label for="picture">Image: <input
-                                            class="border-2 border-solid border-blue-700 p-2 w-[100%]" required
-                                            type="text" name="picture" id="picture" placeholder="Image"
-                                            value="<%= employee.picture %>"
-                                            ></label>
-
-                                    <label for="username">Username: <input
-                                            class="border-2 border-solid border-blue-700 p-2 w-[100%]" required
-                                            type="text" name="username" id="username" placeholder="Username"
-                                            value="<%= employee.username %>"
-                                            > </label>
 
                                     <div class="flex justify-center mt-8">
                                         <button type="submit"
@@ -96,7 +67,7 @@
                                                     </clipPath>
                                                 </defs>
                                             </svg>
-                                            <span class="w-full">Update Employee</span>
+                                            <span class="w-full">Створити препарат</span>
                                             <svg class="w-4 h-4 ms-2 rtl:rotate-180" aria-hidden="true"
                                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                                                 <path stroke="currentColor" stroke-linecap="round"

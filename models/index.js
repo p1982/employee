@@ -16,5 +16,7 @@ db.on("connected", function () {
 })
 // Експортуємо моделі та вихідні дані для використання в інших частинах додатку Room-Booker
 module.exports = {
-    Employee: require("./Employee"),
+    Clients: require("./Clients"),
+    Admin: require("./Admin"),
+    Drug: require("./Drug"),
 }
