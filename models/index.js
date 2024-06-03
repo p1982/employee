@@ -19,4 +19,6 @@ module.exports = {
     Clients: require("./Clients"),
     Admin: require("./Admin"),
     Drug: require("./Drug"),
+    Cart: require("./Cart"),
+    Comment: require("./Comments"),
 }

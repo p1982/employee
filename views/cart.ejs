@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Заголовок передається як змінна до частини head для динамічних заголовків сторінок. -->
+<%- include('./partials/head.ejs', {title: 'cart' }) %>
+
+    <body>
+        <%- include('./partials/header.ejs') %>
+            <%- include('./partials/nav.ejs') %>
+
+                <!-- Ресурс для стилізації кнопок - CTA-посилання: https://flowbite.com/docs/typography/links/ -->
+                <main class="pt-[170px] pb-[70px] bg-[url('/assets/neutral.jpeg')] min-h-[100vh] bg-no-repeat bg-cover">
+                    <div class="max-w-[1200px] my-auto mx-auto">
+                        <div class="gap-4 flex flex-col justify-center items-center">
+
+                            <% if (!carts.length) { %>
+                                <p class="text-[24px] mb-4 ext-xl font-bold"> Немає товарів в корзині</p>
+                                <% } %>
+                                    <% if (carts.length) { %>
+                                        <h2 class="text-[24px] mb-4 ext-xl font-bold"> Список препаратів в корзині:
+                                        </h2>
+                                        <ul class="gap-x-20 gap-y-20 grid grid-cols-3">
+                                            <% for (let cart of carts) { %>
+                                                <li
+                                                    class="p-10 border-2 border-solid rounded-lg shadow-blue-500/50 flex flex-col gap-4">
+                                                    <p><span class="font-bold">Назва:</span>
+                                                        <%= cart.name.charAt(0).toUpperCase() +
+                                                            cart.name.slice(1).toLowerCase() %>
+                                                    </p>
+                                                    <p><span class="font-bold">Ціна: </span>
+                                                        <%= (cart.price).toFixed(2) %> грн
+                                                    </p>
+                                                    <div >
+
+                                                        <div class="mb-4">
+                                                            <p class="font-bold">Кількість: </p>
+                                                            <div class="flex">
+                                                                <form class="w-full flex justify-center"
+                                                                    action="/carts/<%=cart._id%>?_method="
+                                                                    method="POST">
+                                                                    <button type="submit"
+                                                                        class="inline-flex items-center justify-center px-4 py-2 font-medium rounded-lg bg-gray-700 ">
+                                                                        <img class="w-[15px] h-[15px]"
+                                                                            src="/assets/free-icon-minus-sign.png"
+                                                                            alt="plus" />
+
+                                                                    </button>
+                                                                </form>
+                                                                <%= cart.count %>
+                                                                    <form class="w-full flex justify-center"
+                                                                        action="/carts/<%=carts._id%>?_method=PUT"
+                                                                        method="POST">
+                                                                        <button type="submit"
+                                                                        class="inline-flex items-center justify-center px-4 py-2 font-medium rounded-lg bg-gray-700 ">
+                                                                        <img class="w-[15px] h-[15px]"
+                                                                                src="/assets/free-icon-plus-1828921.png"
+                                                                                alt="plus" />
+                                                                        </button>
+                                                                    </form>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="gap-2 flex flex-col justify-center items-center">
+
+                                                            <img class="w-[100px] h-[100px]" src="<%= cart.img_url %>"
+                                                                alt="<%=cart.name%> photo">
+                                                        </div>
+                                                </li>
+                                                <% } %>
+                                        </ul>
+                                        <% } %>
+                                            <%- include('./partials/footer.ejs') %>
+                        </div>
+                    </div>
+                </main>
+    </body>
+
+</html>

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-//Модель, яка контролює створення співробітника
+//Модель, яка контролює створення клієнта
 const adminSchema = new mongoose.Schema({
   firstName: {
     type: String,

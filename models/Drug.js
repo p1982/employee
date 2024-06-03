@@ -1,5 +1,6 @@
-const mongoose = require("mongoose")
-//Ьщдель, яка контролює створення співробітника
+const mongoose = require("mongoose");
+
+// Модель, яка контролює створення ліків
 const drugSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -22,5 +23,6 @@ const drugSchema = new mongoose.Schema({
     required: true
   },
 });
-//експорт модели
-module.exports = mongoose.model("Drug", drugSchema);
+
+// експорт моделі
+module.exports = mongoose.model("Drugs", drugSchema);

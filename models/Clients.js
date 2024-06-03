@@ -1,5 +1,6 @@
-const mongoose = require("mongoose")
-//Модель, яка контролює створення співробітника
+const mongoose = require("mongoose");
+
+// Модель, яка контролює створення клієнта
 const clientsSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -35,5 +36,6 @@ const clientsSchema = new mongoose.Schema({
     default: false
   }
 });
-//експорт модели
+
+// експорт моделі
 module.exports = mongoose.model("Clients", clientsSchema);

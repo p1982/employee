@@ -4,7 +4,7 @@ const isAuthenticated = (req, res, next) => {
   if (req.session.currentUser) {
     return next()
   } else {
-    // Якщо співробітник не авторизований, перенаправити його на сторінку входу
+    // Якщо клієнт не авторизований, перенаправити його на сторінку входу
     res.redirect('/session/signin')
   }
 }

@@ -10,6 +10,7 @@ const drugCtrl = require('./controllers/drugController.js')
 const clientsCtrl = require('./controllers/clientsController.js')
 const adminCtrl = require('./controllers/adminController.js')
 const profileCtrl = require("./controllers/profileController.js")
+const cartCtrl = require("./controllers/cartController.js")
 
 //Ініціалізація бібліотекі змінних середовища
 require("dotenv").config()
@@ -73,10 +74,21 @@ app.use("/drugs", drugCtrl)
 app.use("/clients", clientsCtrl)
 app.use("/admins", adminCtrl)
 app.use("/profile", profileCtrl)
+app.use("/carts", cartCtrl)
 adminCtrl
 // Домашня роут для рендера домашньї сторінки
 app.get("/", (req, res) => {
-  res.render("home.ejs", { currentUser: null })
+  // Знайти в базі даних поточного аутентифікованого клієнта за його ідентифікатором, збереженим у сесії
+  db.Drug.find()
+    .then(drugs => {
+      // Якщо клієнта знайдено, відрендерити сторінку профілю та передати шаблону дані клієнта та currentUser
+      res.render("home.ejs", {
+        drugs: drugs,
+        // Включаємо відображення персоналізованого контенту, передавши шаблону currentUser
+        currentUser: null 
+      })
+    })
+    .catch(err => res.status(500).json({ error: err.message }))
 })
 
 

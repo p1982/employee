@@ -20,7 +20,7 @@ function fetchAndCreateClients(req, res) {
   return db.Clients.deleteMany({})
     .then(deletedData => {
       console.log(`Removed ${deletedData.deletedCount} Clients`)
-      // Отримати та вставити нові дані про співробітників з API
+      // Отримати та вставити нові дані про клієнтів з API
       return axios.get('https://randomuser.me/api/', {
         params: { results: 40, nat: "UA" } // Об'єкт, що містить параметри рядка запиту, який буде додано до URL. Посилання: https://apidog.com/blog/params-axios-get-request/
       })
@@ -55,7 +55,7 @@ function fetchAndCreateClients(req, res) {
 //Маршрут для виклику функції fetchAndCreateClients при GET-запиті 
 router.get('/seed', fetchAndCreateClients)
 
-// // НОВИЙ - показати форму для створення нових співробітників
+// // НОВИЙ - показати форму для створення нових клієнтів
 router.get("/new", isAuthenticated, (req, res) => {
   // Відобразити форму створення нового працівника
   res.render("new-client.ejs", { currentUser: req.session.currentUser })
@@ -64,7 +64,7 @@ router.get("/new", isAuthenticated, (req, res) => {
 router.get("/:id/update", isAuthenticated, (req, res) => {
   db.Clients.findById(req.params.id)
     .then(client => {
-      // Якщо співробітника знайдено, відрендерити сторінку профілю та передати шаблону дані співробітника та currentUser
+      // Якщо клієнта знайдено, відрендерити сторінку профілю та передати шаблону дані клієнта та currentUser
       res.render("update-client.ejs", {
         client: client,
         // Включаємо відображення персоналізованого контенту, передавши шаблону currentUser
@@ -86,13 +86,13 @@ router.get("/:id", isAuthenticated, (req, res) => {
 })
 
 
-// Застосувати проміжне ПЗ isAuthenticated до всіх маршрутів на цьому маршрутизаторі, щоб забезпечити доступ тільки для автентифікованих співробітників
+// Застосувати проміжне ПЗ isAuthenticated до всіх маршрутів на цьому маршрутизаторі, щоб забезпечити доступ тільки для автентифікованих клієнтів
 // Визначити маршрут для доступу до сторінки профілю
 router.get("/", isAuthenticated, (req, res) => {
-  // Знайти в базі даних поточного аутентифікованого співробітника за його ідентифікатором, збереженим у сесії
+  // Знайти в базі даних поточного аутентифікованого клієнта за його ідентифікатором, збереженим у сесії
   db.Clients.find()
     .then(clients => {
-      // Якщо співробітника знайдено, відрендерити сторінку профілю та передати шаблону дані співробітника та currentUser
+      // Якщо клієнта знайдено, відрендерити сторінку профілю та передати шаблону дані клієнта та currentUser
       res.render("clients.ejs", {
         clients: clients,
         // Включаємо відображення персоналізованого контенту, передавши шаблону currentUser
@@ -151,20 +151,20 @@ router.put('/:id', isAuthenticated, async (req, res) => {
 })
 
 
-// DELETE - видалити певного співробітника, а потім перенаправити
+// DELETE - видалити певного клієнта, а потім перенаправити
 router.delete("/:id", isAuthenticated, (req, res) => {
   // Знайти працівника за його ідентифікатором
   db.Clients.findById(req.params.id)
     .then((client) => {
-      // Перевірка наявності співробітника
+      // Перевірка наявності клієнта
       if (!client) {
-        // Обробка помилки, якщо співробітник не знайден
+        // Обробка помилки, якщо клієнт не знайден
         return res.json({ status: 404, message: "Client not found" })
       }
       // Видалення
       db.Clients.findByIdAndDelete(req.params.id)
         .then(() => {
-          // Перехід на сторінку всіх співробітників
+          // Перехід на сторінку всіх клієнтів
           res.redirect("/clients")
         })
         // Обробка бази данних
