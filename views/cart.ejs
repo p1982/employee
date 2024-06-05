@@ -35,19 +35,19 @@
                                                             <p class="font-bold">Кількість: </p>
                                                             <div class="flex">
                                                                 <form class="w-full flex justify-center"
-                                                                    action="/carts/<%=cart._id%>?_method="
+                                                                    action="/carts/<%=cart._id%>/remove/?_method=PUT"
                                                                     method="POST">
                                                                     <button type="submit"
                                                                         class="inline-flex items-center justify-center px-4 py-2 font-medium rounded-lg bg-gray-700 ">
                                                                         <img class="w-[15px] h-[15px]"
                                                                             src="/assets/free-icon-minus-sign.png"
-                                                                            alt="plus" />
+                                                                            alt="minus" />
 
                                                                     </button>
                                                                 </form>
                                                                 <%= cart.count %>
                                                                     <form class="w-full flex justify-center"
-                                                                        action="/carts/<%=carts._id%>?_method=PUT"
+                                                                        action="/carts/<%=cart._id%>/add/?_method=PUT"
                                                                         method="POST">
                                                                         <button type="submit"
                                                                         class="inline-flex items-center justify-center px-4 py-2 font-medium rounded-lg bg-gray-700 ">

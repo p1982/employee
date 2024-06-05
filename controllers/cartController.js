@@ -30,96 +30,120 @@ router.get("/", isAuthenticated, (req, res) => {
 })
 
 
-//Створити маршрут для створення нового працівника
+// Створити маршрут для створення нового працівника
 router.post('/:id', isAuthenticated, async (req, res) => {
-    const drug = await db.Drug.findOne({
-        _id: { $ne: req.params.id }
-    });
-    const cart = await db.Cart.findOne({
-        name: { $ne: drug.name }
-    });
-    
-    if (!cart) {
-        const newCart = {
-            name: drug.name,
-            price: drug.price,
-            count: 1,
-            img_url: drug.img_url,
-        }
-        console.log(newCart, 2222);
-        // Зберегти нового працівника в базі даних
-        await db.Cart.create(newCart)
-    }
-
-if(cart){
-    const update = {
+    try {
+      const drug = await db.Drug.findById(req.params.id);
+      if (!drug) {
+        return res.status(404).json({ error: "Drug not found" });
+      }
+  
+      const cart = await db.Cart.findOne({
         name: drug.name,
-        price: drug.price,
-        count: cart.count+=1,
-        img_url: drug.img_url,
+        client: req.session.currentUser._id
+      });
+  
+      if (!cart) {
+        const newCart = {
+          name: drug.name,
+          price: drug.price,
+          count: 1,
+          img_url: drug.img_url,
+          client: req.session.currentUser._id
+        };
+  
+        // Зберегти нового корзину в базі даних
+        await db.Cart.create(newCart);
+      } else {
+        const update = {
+          count: cart.count + 1
+        };
+        await db.Cart.updateOne({ _id: cart._id }, { $set: update });
+      }
+  
+      // Перенаправлення після успішного створення інсуліну
+      res.redirect("/carts");
+    } catch (err) {
+      res.status(500).json({ error: err.message });
     }
-    await db.Drug.updateOne({ _id: cart._id }, { $set: update }, { new: true })
-}
+  });
 
+  router.put('/:id/add', isAuthenticated, async (req, res) => {
+    console.log(req.params.id)
+    try {
+  
+      // Пошук інсуліну в кошику корзини
+      const cartItem = await db.Cart.findById(req.params.id)
+  
+      if (!cartItem) {
+        return res.status(404).json({ message: 'Cart not found in cart' });
+      }
+     // Додавання одного до кількості
+     cartItem.count += 1;
 
-    // Перенаправлення після успішного створення працівника
-    //res.redirect("/drugs")
-})
-
-//Створити маршрут для оновлення працівника
-router.put('/:id', isAuthenticated, async (req, res) => {
-    //пошук працівника в базі данних
-    const drug = await db.Drug.find({
-        _id: { $ne: req.params.id }
-    });
-    //Перевірка чи знайдений працівник
-    if (!drug) {
-        res.json({ status: 404, message: 'Drug not found' })
+     // Збереження оновленого кошика
+     await cartItem.save();
+ 
+     // Перенаправлення після успішного оновлення інсуліну
+     res.redirect("/carts"); // or any other appropriate route
+    } catch (err) {
+      res.status(500).json({ error: err.message });
     }
+  });
 
-    const updateDrug = {
-        name: req.body.name,
-        price: req.body.price,
-        count: req.body.count,
-        isAvailable: req.body.count ? true : false,
-        img_url: req.body.img_url,
+  router.put('/:id/remove', isAuthenticated, async (req, res) => {
+    console.log(req.params.id)
+    try {
+  
+      // Пошук інсуліну в кошику корзини
+      const cartItem = await db.Cart.findById(req.params.id)
+  
+      if (!cartItem) {
+        return res.status(404).json({ message: 'Cart not found in cart' });
+      }
+      
+     // Додавання одного до кількості
+     cartItem.count -= 1;
+
+     if (cartItem.count <= 0) {
+      // Видалити інсулін з кошика, якщо кількість менше або дорівнює нулю
+      await db.Cart.findByIdAndDelete(cartItem._id);
+    } else {
+      // Збереження оновленого кошика
+      await cartItem.save();
     }
+ 
+     // Перенаправлення після успішного оновлення інсуліну
+     res.redirect("/carts"); // or any other appropriate route
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
 
-    // Оновлення бази данних новими даними про працівника
-    await db.Drug.updateOne({ _id: req.params.id }, { $set: updateDrug }, { new: true })
-
-    // Перенаправлення після успішного створення працівника
-    res.redirect("/drugs")
-})
-
-
-// DELETE - видалити певного клієнта, а потім перенаправити
-router.delete("/:id", isAuthenticated, (req, res) => {
-    // Знайти працівника за його ідентифікатором
-    db.Drug.findById(req.params.id)
-        .then((drug) => {
-            // Перевірка наявності клієнта
-            if (!drug) {
-                // Обробка помилки, якщо клієнт не знайден
-                return res.json({ status: 404, message: "Drug not found" })
-            }
-            // Видалення
-            db.Drug.findByIdAndDelete(req.params.id)
-                .then(() => {
-                    // Перехід на сторінку всіх клієнтів
-                    res.redirect("/drugs")
-                })
-                // Обробка бази данних
-                .catch(error => {
-                    res.status(500).send(error.message)
-                })
-        })
-        // Обробка помилки сервера
-        .catch(error => {
-            res.status(500).send("something went wrong")
-        })
-})
-
+// DELETE - видалити певний інсулін з кошика, а потім перевірити, чи потрібно видалити сам кошик
+router.delete("/:id", isAuthenticated, async (req, res) => {
+    try {
+      // Знайти інсулін у кошику за його ідентифікатором
+      const cartItem = await db.Cart.findById(req.params.id);
+      if (!cartItem) {
+        return res.status(404).json({ message: "Cart item not found" });
+      }
+  
+      // Видалення інсуліну з кошика
+      await db.Cart.findByIdAndDelete(req.params.id);
+  
+      // Видалити кошик, якщо він порожній
+      const remainingItems = await db.Cart.find({ client: req.session.currentUser._id });
+      if (remainingItems.length === 0) {
+        await db.Cart.deleteMany({ client: req.session.currentUser._id });
+      }
+  
+      // Перенаправлення після успішного видалення інсуліну
+      res.redirect("/carts");
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  });
 
 
 /*  Експортуйте ці маршрути, щоб вони були доступні в `сервер.js`.
