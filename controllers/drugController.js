@@ -11,21 +11,21 @@ const router = express.Router()
 // Проміжне програмне забезпечення для перевірки автентичності інсуліну перед тим, як дозволити доступ до певних маршрутів
 const isAuthenticated = require("../controllers/isAuthenticated")
 
-// // НОВИЙ - показати форму для створення нових клієнтів
+// НОВИЙ - показати форму для створення нових клієнтів
 router.get("/new", isAuthenticated, (req, res) => {
   // Відобразити форму створення нового інсуліну
   res.render("new-drug.ejs", { currentUser: req.session.currentUser })
 })
 
-// // НОВИЙ - показати форму для створення нових клієнтів
+// НОВИЙ - показати форму для створення нових клієнтів
 router.get("/:drug_id/comments/new", isAuthenticated, (req, res) => {
   // Відобразити форму створення нового інсуліну
   res.render("new-comment.ejs", { currentUser: req.session.currentUser, drug_id: req.params.drug_id })
 })
 
-// // НОВИЙ - показати форму для створення нових клієнтів
+// НОВИЙ - показати форму для створення нових коментарів
 router.get("/:drug_id/comments/:comment_id", isAuthenticated, (req, res) => {
-  // Відобразити форму створення нового інсуліну
+  // Відобразити форму створення нових коментарів
   res.render("answer.ejs", { currentUser: req.session.currentUser, drug_id: req.params.drug_id, comment_id:req.params.comment_id })
 })
 
